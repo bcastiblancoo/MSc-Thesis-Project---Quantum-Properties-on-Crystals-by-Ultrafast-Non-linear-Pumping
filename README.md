@@ -23,11 +23,9 @@ project-root/
 │       ├── reflected_intensity_derivation.pdf
 │     
 │
-├── numerical/
+├── numerics/
 │   ├── scripts/
-│   │   ├── harmonic_extraction.py
-│   │   ├── polar_analysis.py
-│   │   └── phase_alignment.py
+│   │   ├── Te_ultrafast_analysis.py
 │   │
 │   ├── data/
 │   │   ├── raw/
