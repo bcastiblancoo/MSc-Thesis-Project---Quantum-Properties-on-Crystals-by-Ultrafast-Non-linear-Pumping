@@ -16,12 +16,12 @@ project-root/
 │
 ├── analytical/
 │   ├── mathematica/
-│   │   ├── susceptibility_factorization.nb
+│   │   ├── SHG-reflected-intensity-factorization.nb
 │   │   
 │   │
 │   └── derivations/
 │       ├── reflected_intensity_derivation.pdf
-│       └── notes.md
+│     
 │
 ├── numerical/
 │   ├── scripts/
