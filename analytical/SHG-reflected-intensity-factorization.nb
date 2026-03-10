@@ -1,0 +1,111 @@
+ClearAll["Global`*"];
+$Assumptions = {\[Theta] \[Element] Reals};
+vars = {a, b, c, d};
+expr = a Cos[\[Theta]]^3 + b Sin[\[Theta]]^2 Cos[\[Theta]] + 
+   c Sin[\[Theta]] Cos[\[Theta]]^2 + d Sin[\[Theta]]^3;
+
+absSq = ComplexExpand[expr Conjugate[expr], {a, b, c, d}] // Expand;
+
+harmonicForm = TrigReduce[absSq] // Expand;
+
+collected = 
+  Collect[harmonicForm, {1, Cos[2 \[Theta]], Sin[2 \[Theta]], 
+    Cos[4 \[Theta]], Sin[4 \[Theta]], Cos[6 \[Theta]], Sin[6 \[Theta]]},
+    FullSimplify];
+
+A0 = collected /. {Cos[2 \[Theta]] -> 0, Sin[2 \[Theta]] -> 0, 
+     Cos[4 \[Theta]] -> 0, Sin[4 \[Theta]] -> 0, Cos[6 \[Theta]] -> 0,
+      Sin[6 \[Theta]] -> 0} // FullSimplify;
+
+A2c = Coefficient[collected, Cos[2 \[Theta]]] // FullSimplify;
+A2s = Coefficient[collected, Sin[2 \[Theta]]] // FullSimplify;
+A4c = Coefficient[collected, Cos[4 \[Theta]]] // FullSimplify;
+A4s = Coefficient[collected, Sin[4 \[Theta]]] // FullSimplify;
+A6c = Coefficient[collected, Cos[6 \[Theta]]] // FullSimplify;
+A6s = Coefficient[collected, Sin[6 \[Theta]]] // FullSimplify;
+
+toConjugateForm[expr_] := 
+  FixedPoint[
+    ExpandAll[# /. {Re[z_] :> (z + Conjugate[z])/2, 
+        Im[z_] :> (z - Conjugate[z])/(2 I), 
+        Conjugate[x_ + y_] :> Conjugate[x] + Conjugate[y], 
+        Conjugate[x_ - y_] :> Conjugate[x] - Conjugate[y], 
+        Conjugate[x_ y_] :> Conjugate[x] Conjugate[y]}] &, expr] // 
+   FullSimplify;
+
+A0c = toConjugateForm[A0];
+A2cc = toConjugateForm[A2c];
+A2sc = toConjugateForm[A2s];
+A4cc = toConjugateForm[A4c];
+A4sc = toConjugateForm[A4s];
+A6cc = toConjugateForm[A6c];
+A6sc = toConjugateForm[A6s];
+
+(*Cosine-sector basis:XiCos={ |a|^2, |b|^2+2 Re[a b*], |d|^2+2 Re[c d*], \
+|c|^2}^T*)
+
+xiCosRules = {aa -> a Conjugate[a], 
+   bbpab -> b Conjugate[b] + a Conjugate[b] + b Conjugate[a], 
+   ddpcd -> d Conjugate[d] + c Conjugate[d] + d Conjugate[c], 
+   cc -> c Conjugate[c]};
+
+xiCosVars = {aa, bbpab, ddpcd, cc};
+
+(*Sine-sector basis:XiSin={2 Re[a c*],2 Re[b d*],2 Re[a d*]+2 Re[b c*]}^\
+T*)
+
+xiSinRules = {ac -> a Conjugate[c] + c Conjugate[a], 
+   bd -> b Conjugate[d] + d Conjugate[b], 
+   adbc -> a Conjugate[d] + d Conjugate[a] + b Conjugate[c] + 
+     c Conjugate[b]};
+
+xiSinVars = {ac, bd, adbc};
+
+extractMatrix[exprList_, basisRules_, basisVars_] := 
+  Module[{tmp, mat}, 
+   tmp = Expand[exprList /. Thread[Reverse /@ basisRules]];
+   mat = 
+    Table[Coefficient[tmp[[i]], basisVars[[j]]], {i, Length[tmp]}, {j,
+       Length[basisVars]}];
+   {tmp, mat}];
+
+AcosList = {A0c, A2cc, A4cc, A6cc};
+
+{AcosInReducedBasis, Mcos} = 
+  extractMatrix[AcosList, xiCosRules, xiCosVars];
+
+cosCheck = FullSimplify[AcosInReducedBasis - Mcos . xiCosVars];
+
+Print["Cosine-sector coefficients in reduced basis:"];
+Print[AcosInReducedBasis // TableForm];
+
+AsinList = {A2sc, A4sc, A6sc};
+
+{AsinInReducedBasis, Msin} = 
+  extractMatrix[AsinList, xiSinRules, xiSinVars];
+
+
+Print["Sine-sector coefficients in reduced basis:"];
+Print[AsinInReducedBasis // TableForm];
+
+XiCos = {a Conjugate[a], 
+   b Conjugate[b] + a Conjugate[b] + b Conjugate[a], 
+   d Conjugate[d] + c Conjugate[d] + d Conjugate[c], c Conjugate[c]};
+
+XiSin = {a Conjugate[c] + c Conjugate[a], 
+   b Conjugate[d] + d Conjugate[b], 
+   a Conjugate[d] + d Conjugate[a] + b Conjugate[c] + c Conjugate[b]};
+
+Print["XiCos ="];
+Print[XiCos // TableForm];
+
+Print["XiSin ="];
+Print[XiSin // TableForm];
+
+(*11) export to LaTeX*)
+
+Print["TeXForm[XiCos] = "];
+Print[TeXForm[XiCos]];
+
+Print["TeXForm[XiSin] = "];
+Print[TeXForm[XiSin]];
