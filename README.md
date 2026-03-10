@@ -1,4 +1,4 @@
-# MSc-Thesis-Project---Quantum-Properties-on-Crystals-by-Ultrafast-Non-linear-Pumping
+# MSc-Thesis-Project-Quantum-Properties-on-Crystals-by-Ultrafast-Non-linear-Pumping
 
 
 This repository contains the analytical and numerical work related to the study of nonlinear optical response and harmonic decomposition of reflected intensity on crystals such as Tellurium. The goal is to study the coherent phonon oscillations in the crystals, excited by ultrafast pumping, and connect the analytical expressions derived from nonlinear susceptibilities with numerical analysis of the experimental data collected by pump-probe spectroscopy.
